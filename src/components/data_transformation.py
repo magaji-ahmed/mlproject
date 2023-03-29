@@ -20,7 +20,7 @@ from sklearn.pipeline import Pipeline
 
 @dataclass
 class DataTransformationConfig:
-    preprocessor_obj_file_path:str = os.path.join('artifact','preprocessor.pkl')
+    preprocessor_obj_file_path:str = os.path.join('artifacts','preprocessor.pkl')
 
 class DataTransformation:
     def __init__(self):
@@ -52,7 +52,7 @@ class DataTransformation:
                 steps=[
                     ('Imputer', SimpleImputer(strategy='most_frequent')), # using mode because its categorical
                     ('One_Hot_Encoder', OneHotEncoder()),
-                    ('Scaler', StandardScaler())
+                    ('Scaler', StandardScaler(with_mean=False))
                 ]
             )
 
@@ -87,10 +87,10 @@ class DataTransformation:
 
             num_features = ['writing_score','reading_score']
 
-            input_feature_train_df = train_df(columns=target_column_name, axis=1)
+            input_feature_train_df = train_df.drop(columns=target_column_name, axis=1)
             target_feature_train_df = train_df[target_column_name]
 
-            input_feature_test_df = test_df(columns=target_column_name, axis=1)
+            input_feature_test_df = test_df.drop(columns=target_column_name, axis=1)
             target_feature_test_df = test_df[target_column_name]
 
             logging.info('Applying preprocessor object to train and test dataframes')
@@ -109,7 +109,7 @@ class DataTransformation:
             logging.info('Saved preprocessing object')
             # save the preprocessor object
             save_object(
-                file_path=self.data_transformation_config.preprocessing_object_file_path,
+                file_path=self.data_transformation_config.preprocessor_obj_file_path,
                 obj=preprocessor_obj
             )
 
@@ -121,4 +121,4 @@ class DataTransformation:
             
 
         except Exception as e:
-            pass
+            raise CustomException(e, sys)
