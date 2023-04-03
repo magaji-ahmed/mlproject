@@ -26,6 +26,7 @@ def evaluate_model(x_train, y_train, x_test, y_test, models):
         for i in range(len(list(models))):
             model = list(models.values())[i]
 
+            print(F"\n[INFO] TRAINING MODEL -> {list(models.keys())[i]}")
             model.fit(x_train, y_train)
 
             y_train_pred = model.predict(x_train)
@@ -34,9 +35,12 @@ def evaluate_model(x_train, y_train, x_test, y_test, models):
             train_model_score = r2_score(y_train, y_train_pred)
             test_model_score = r2_score(y_test, y_test_pred)
 
+            print(f"-----> TRAIN SCORE => {train_model_score:.2f}")
+            print(f"-----> TEST  SCORE => {test_model_score:.2f}\n")
+
             report[list(models.keys())[i]] = test_model_score
         
         return report
-        
+
     except Exception as e:
         raise CustomException(e, sys)
